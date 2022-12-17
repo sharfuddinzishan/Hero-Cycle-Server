@@ -359,6 +359,30 @@ const herocycle = async () => {
             const order = await reviewsCollection.find({}).toArray();
             res.send(order);
         })
+        // Get Reviews of a user
+          app.get('/user/reviews', async (req, res) => {
+            const email = req.query.email
+            let query = { email }
+            let result
+            // console.log('Boolean ', email !== 'undefined', typeof email)
+            if (email) {
+                const user = await usersCollection.findOne(query);
+                if (user?.role) {
+                    result = await reviewsCollection.find(query).toArray();
+                    res.send(result)
+                }
+                else {
+                    res.send({ status: 401 })
+                }
+            }
+            else {
+                result = await ordersCollection.find({}).toArray();
+                if (result.length)
+                    res.send(result)
+                else
+                    res.send({ status: 401 })
+            }
+        })
 
         // Delete Review
         app.delete('/reviews/:reviewID', verifyToken, async (req, res) => {
