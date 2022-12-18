@@ -436,9 +436,9 @@ const herocycle = async () => {
             const booking = req.body;
             
             const price = booking.price;
-            console.log("price now",price)
-            const amount = price / 100;
-            console.log("amount now",amount)
+            console.log("price now",typeof price)
+            const amount = price ;
+            console.log("amount now",typeof amount)
 
 
             const paymentIntent = await stripe.paymentIntents.create({
