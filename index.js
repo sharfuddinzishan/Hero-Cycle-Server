@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 var admin = require("firebase-admin");
+const stripe =require('stripe')(process.env.STRIPE_SECRET_KEY)
 // Middleware
 app.use(express.json());
 app.use(cors());
@@ -407,6 +408,50 @@ const herocycle = async () => {
                 res.send({ deletedCount: 0 })
             }
         })
+
+    /*******************************Payment***************************************** */
+        // Add Payment
+        app.put('/payment/order', async (req, res) => {
+            const payment=req.body;
+            console.log('Payment Body', payment)
+            const id =payment.transationDetails.getOrderId;
+            console.log("payment id ",id)
+            
+            const transactionID =payment.transationDetails.transactionID;
+            console.log("transa id ",transactionID)
+            const filter ={_id:ObjectId(id)};
+            const updatedDoc={
+                $set:{
+                    paid:true,
+                    transactionid:transactionID,
+                    orderStatus:'confirm'
+                }
+            }
+                    const result = await ordersCollection.updateOne(filter, updatedDoc)
+                    res.send(result)
+        })
+        // Payment Calculate
+            app.post('/create-payment-intent',async (req, res) => {
+            console.log('Body ',req.body)
+            const booking = req.body;
+            
+            const price = booking.price;
+            console.log("price now",price)
+            const amount = price / 100;
+            console.log("amount now",amount)
+
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
 
     }
 
