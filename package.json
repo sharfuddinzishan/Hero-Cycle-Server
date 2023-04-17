@@ -20,6 +20,7 @@
     "firebase-admin": "^10.3.0",
     "mongodb": "^4.15.0",
     "nodemon": "^2.0.22",
+    "render-cli": "^0.3.2",
     "stripe": "^11.18.0"
   }
 }
